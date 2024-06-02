@@ -180,7 +180,7 @@ impl Game {
         copy
     }
 
-    fn get_full_move_counter(&self) -> usize {
+    pub fn get_full_move_counter(&self) -> usize {
         let mut half_moves = self.start_full_move_counter * 2;
         for x in self.moves.iter() {
             match *x {
@@ -193,7 +193,7 @@ impl Game {
         half_moves / 2
     }
 
-    fn get_half_move_clock(&self) -> usize {
+    pub fn get_half_move_clock(&self) -> usize {
         let mut reversible_moves = self.start_half_move_clock;
         let mut board = self.start_pos;
         for x in self.moves.iter() {
