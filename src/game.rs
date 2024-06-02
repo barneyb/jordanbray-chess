@@ -537,19 +537,24 @@ fn test_fen_string() {
         format!("{}", game)
     );
     game.make_move(ChessMove::new(Square::C7, Square::C5, None));
+    let serialized_game = format!("{}", game);
     assert_eq!(
         "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
-        format!("{}", game)
+        serialized_game
+    );
+    assert_eq!(
+        serialized_game,
+        format!("{}", Game::from_str(&serialized_game).unwrap()),
     );
     game.make_move(ChessMove::new(Square::G1, Square::F3, None));
-    let final_serialized_game = format!("{}", game);
+    let serialized_game = format!("{}", game);
     assert_eq!(
         "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
-        final_serialized_game
+        serialized_game
     );
     assert_eq!(
-        final_serialized_game,
-        format!("{}", Game::from_str(&final_serialized_game).unwrap()),
+        serialized_game,
+        format!("{}", Game::from_str(&serialized_game).unwrap()),
     );
 }
 

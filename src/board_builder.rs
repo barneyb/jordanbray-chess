@@ -568,3 +568,18 @@ fn test_in_check() {
     let res: Result<Board, _> = bb.try_into();
     assert!(res.is_err()); // My opponent cannot be in check when it's my move.
 }
+
+#[test]
+fn test_fen_en_passant() {
+    let fen = "rnbqkbnr/pppp2pp/8/4pP2/8/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 1";
+    let start = Board::from_str(fen).unwrap();
+    assert_eq!(fen, format!("{start}"));
+}
+
+#[test]
+fn test_fen_en_passant_rank_error() {
+    let bad_fen = "rnbqkbnr/pppp2pp/8/4pP2/8/8/PPPP1PPP/RNBQKBNR w KQkq e5 0 1";
+    let start = Board::from_str(bad_fen).unwrap();
+    assert_eq!("rnbqkbnr/pppp2pp/8/4pP2/8/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 1",
+               format!("{start}"));
+}

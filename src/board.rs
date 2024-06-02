@@ -19,6 +19,7 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::mem;
 use std::str::FromStr;
+use crate::Rank;
 
 /// A representation of a chess board.  That's why you're here, right?
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
@@ -774,6 +775,7 @@ impl Board {
     /// Unset the en_passant square.
     fn remove_ep(&mut self) {
         self.en_passant = None;
+        self.en_passant_target = None;
     }
 
     /// Give me the en_passant square, if it exists.
@@ -854,10 +856,13 @@ impl Board {
         {
             self.en_passant = Some(sq);
         }
-    }
-
-    fn set_ep_target(&mut self, sq: Option<Square>) {
-        self.en_passant_target = sq;
+        self.en_passant_target = Some(match sq.get_rank() {
+            Rank::Third |
+            Rank::Sixth => sq,
+            Rank::Fourth |
+            Rank::Fifth => sq.ubackward(self.side_to_move),
+            _ => panic!("{} is an illegal en passant square", sq)
+        });
     }
 
     /// Is a particular move legal?  This function is very slow, but will work on unsanitized
@@ -1050,9 +1055,6 @@ impl Board {
             result.xor(captured, dest_bb, !self.side_to_move);
         }
 
-        // Reset en_passant target
-        result.set_ep_target(None);
-
         #[allow(deprecated)]
         result.remove_their_castle_rights(CastleRights::square_to_castle_rights(
             !self.side_to_move,
@@ -1106,7 +1108,6 @@ impl Board {
                 && (dest_bb & get_pawn_dest_double_moves()) != EMPTY
             {
                 result.set_ep(dest);
-                result.set_ep_target(Some(dest.ubackward(self.side_to_move)));
                 result.checkers ^= get_pawn_attacks(ksq, !result.side_to_move, dest_bb);
             } else if Some(dest.ubackward(self.side_to_move)) == self.en_passant {
                 result.xor(
